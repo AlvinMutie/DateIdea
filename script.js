@@ -37,7 +37,8 @@ const SURPRISE_MESSAGES = [
     "Your smile makes everything brighter.",
     "I'm grateful to know you.",
     "You bring so much light into the world.",
-    "Being around you feels like home."
+    "Being around you feels like home.",
+    "DOOM DOOM DARKNESS" // Special confetti message
 ];
 
 // ============================================
@@ -252,6 +253,11 @@ function initSurpriseButton() {
             surpriseText.textContent = SURPRISE_MESSAGES[messageIndex];
             surpriseMessage.classList.add('revealed');
             isRevealed = true;
+            
+            // Check if it's the DOOM message and trigger confetti
+            if (SURPRISE_MESSAGES[messageIndex] === 'DOOM DOOM DARKNESS') {
+                triggerConfetti();
+            }
         } else {
             // Cycle to next message
             messageIndex = (messageIndex + 1) % SURPRISE_MESSAGES.length;
@@ -260,9 +266,57 @@ function initSurpriseButton() {
             surpriseMessage.style.opacity = '0';
             setTimeout(() => {
                 surpriseMessage.style.opacity = '1';
+                
+                // Check if it's the DOOM message and trigger confetti
+                if (SURPRISE_MESSAGES[messageIndex] === 'DOOM DOOM DARKNESS') {
+                    triggerConfetti();
+                }
             }, 200);
         }
     });
+}
+
+/**
+ * Create confetti effect
+ */
+function triggerConfetti() {
+    const confettiCount = 100;
+    const colors = ['#5a7c5a', '#9fb5a0', '#8b7355', '#c4d5c4', '#f5f1e8', '#6b5d4f'];
+    const confettiContainer = document.createElement('div');
+    confettiContainer.style.position = 'fixed';
+    confettiContainer.style.top = '0';
+    confettiContainer.style.left = '0';
+    confettiContainer.style.width = '100%';
+    confettiContainer.style.height = '100%';
+    confettiContainer.style.pointerEvents = 'none';
+    confettiContainer.style.zIndex = '10000';
+    document.body.appendChild(confettiContainer);
+    
+    for (let i = 0; i < confettiCount; i++) {
+        const confetti = document.createElement('div');
+        confetti.style.position = 'absolute';
+        confetti.style.width = Math.random() * 10 + 5 + 'px';
+        confetti.style.height = Math.random() * 10 + 5 + 'px';
+        confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+        confetti.style.left = Math.random() * 100 + '%';
+        confetti.style.top = '-10px';
+        confetti.style.borderRadius = Math.random() > 0.5 ? '50%' : '0';
+        confetti.style.opacity = Math.random() * 0.5 + 0.5;
+        
+        const angle = Math.random() * 360;
+        const velocity = Math.random() * 3 + 2;
+        const rotation = Math.random() * 720;
+        
+        confetti.style.transform = `rotate(${angle}deg)`;
+        confetti.style.animation = `confettiFall ${Math.random() * 3 + 2}s linear forwards`;
+        
+        confettiContainer.appendChild(confetti);
+    }
+    
+    // Remove confetti after animation
+    setTimeout(() => {
+        confettiContainer.remove();
+    }, 5000);
 }
 
 // ============================================
@@ -314,6 +368,7 @@ function initFormHandling() {
         
         // Get form data
         const selectedDate = getSelectedDate();
+        const selectedTime = getSelectedTime();
         const suggestions = document.getElementById('suggestions')?.value || '';
         
         // Show sending status immediately
@@ -324,6 +379,7 @@ function initFormHandling() {
         console.log('Yes button clicked - sending email via EmailJS...');
         const emailResult = await sendEmailViaEmailJS('YES', {
             selectedDate: selectedDate,
+            selectedTime: selectedTime,
             suggestions: suggestions,
             noReason: ''
         });
@@ -411,6 +467,7 @@ function initFormHandling() {
         // Wait a moment for user to optionally add reason, then send
         setTimeout(async () => {
             const selectedDate = getSelectedDate();
+            const selectedTime = getSelectedTime();
             const suggestions = document.getElementById('suggestions')?.value || '';
             const noReason = noReasonTextarea?.value || '';
             
@@ -421,6 +478,7 @@ function initFormHandling() {
             console.log('No button clicked - sending email via EmailJS...');
             const emailResult = await sendEmailViaEmailJS('NO', {
                 selectedDate: selectedDate,
+                selectedTime: selectedTime,
                 suggestions: suggestions,
                 noReason: noReason
             });
@@ -493,6 +551,24 @@ function getSelectedDate() {
     }
     
     return SUGGESTED_DATE;
+}
+
+/**
+ * Get the selected time (either from time picker or default)
+ */
+function getSelectedTime() {
+    const timePicker = document.getElementById('selected-time');
+    
+    if (timePicker && timePicker.value) {
+        // Format time (e.g., "10:00" -> "10:00 AM")
+        const [hours, minutes] = timePicker.value.split(':');
+        const hour = parseInt(hours, 10);
+        const ampm = hour >= 12 ? 'PM' : 'AM';
+        const displayHour = hour % 12 || 12;
+        return `${displayHour}:${minutes} ${ampm}`;
+    }
+    
+    return '10:00 AM'; // Default time
 }
 
 /**
@@ -980,12 +1056,13 @@ async function sendEmailViaEmailJS(responseType, formData) {
             // Form data
             response_type: responseType === 'YES' ? 'Yes 🌿' : 'No 🤍',
             selected_date: formData.selectedDate || SUGGESTED_DATE,
+            selected_time: formData.selectedTime || '10:00 AM',
             suggestions: formData.suggestions || 'None provided',
             no_reason: formData.noReason || 'N/A',
             timestamp: new Date().toLocaleString(),
             page_name: 'DateWithYou',
             message: responseType === 'YES' 
-                ? `She said YES! Selected date: ${formData.selectedDate || SUGGESTED_DATE}`
+                ? `She said YES! Selected date: ${formData.selectedDate || SUGGESTED_DATE} at ${formData.selectedTime || '10:00 AM'}`
                 : `She said NO. Reason: ${formData.noReason || 'Not provided'}`
         };
         

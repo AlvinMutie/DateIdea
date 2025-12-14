@@ -127,6 +127,49 @@
         </div>
     </section>
 
+    <!-- Personal Note Section -->
+    <section class="personal-note-section" id="personalNote" aria-label="Personal note">
+        <div class="personal-note-container fade-in-scroll">
+            <div class="personal-note-card">
+                <h3 class="personal-note-title">A Note from Me 🌿</h3>
+                <div class="personal-note-content">
+                    <p class="personal-note-text">
+                        I chose this place because it feels calm and meaningful to me. It's the kind of location where you can slow down, think clearly, and just enjoy the moment without distractions.
+                    </p>
+                    <p class="personal-note-text">
+                        I'm really looking forward to creating new memories here, taking everything in, and sharing the experience with someone special. It's not just about the place itself, but how it makes you feel when you're there.
+                    </p>
+                </div>
+                
+                <!-- Map in Personal Note Section -->
+                <div class="map-container slide-up-scroll" style="margin-top: var(--spacing-lg);">
+                    <h4 class="map-title">🗺️ Find the Location</h4>
+                    <p class="map-subtitle">Click the map to open in Google Maps</p>
+                    <div class="map-wrapper">
+                        <iframe 
+                            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3988.7325921423007!2d36.77509717323766!3d-1.3366923986506356!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x182f1aa8d78adf03%3A0x690abeb8fd6038f7!2sNairobi%20Safari%20Walk!5e0!3m2!1sen!2ske!4v1765750195265!5m2!1sen!2ske" 
+                            width="100%" 
+                            height="450" 
+                            style="border:0; border-radius: 12px;" 
+                            allowfullscreen="" 
+                            loading="lazy" 
+                            referrerpolicy="no-referrer-when-downgrade"
+                            title="Nairobi Safari Walk Location"
+                        ></iframe>
+                    </div>
+                    <a 
+                        href="https://www.google.com/maps/search/Nairobi+Safari+Walk" 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        class="map-link-button"
+                    >
+                        Open in Google Maps 🗺️
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
     <!-- Appreciation Section -->
     <section class="appreciation-section" id="appreciation" aria-label="Appreciation messages">
         <div class="appreciation-content">
@@ -209,6 +252,21 @@
                         min="2025-01-01"
                         value="2025-12-17"
                     >
+                </div>
+
+                <!-- Time picker - always visible -->
+                <div class="time-picker-container fade-in-scroll">
+                    <label for="selected-time" class="time-picker-label">
+                        Choose your preferred time (Optional) ⏰
+                    </label>
+                    <input 
+                        type="time" 
+                        id="selected-time" 
+                        name="selected_time"
+                        class="time-picker"
+                        value="10:00"
+                    >
+                    <p class="time-picker-hint">If no time is selected, we'll go with 10:00 AM 🤍</p>
                 </div>
 
                 <!-- Suggestions Section -->

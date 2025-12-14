@@ -800,6 +800,194 @@ body {
 }
 
 /* ============================================
+   LOCATION DETAILS SECTION
+   ============================================ */
+
+.location-details-section {
+    min-height: auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--spacing-xl) var(--spacing-md);
+    position: relative;
+    z-index: 2;
+    background: var(--bg-secondary);
+}
+
+.location-details-container {
+    max-width: 900px;
+    width: 100%;
+}
+
+.location-details-title {
+    font-family: var(--font-serif);
+    font-size: clamp(1.8rem, 4vw, 2.5rem);
+    color: var(--color-forest-green);
+    text-align: center;
+    margin-bottom: var(--spacing-lg);
+    font-weight: 400;
+}
+
+.location-info-card {
+    background: var(--card-bg);
+    backdrop-filter: blur(10px);
+    padding: var(--spacing-lg);
+    border-radius: 16px;
+    border: 1px solid rgba(154, 181, 160, 0.3);
+    box-shadow: 0 10px 40px rgba(90, 124, 90, 0.1);
+    margin-bottom: var(--spacing-lg);
+}
+
+.location-info-item {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--spacing-md);
+    margin-bottom: var(--spacing-md);
+    padding-bottom: var(--spacing-md);
+    border-bottom: 1px solid rgba(154, 181, 160, 0.2);
+}
+
+.location-info-item:last-child {
+    margin-bottom: 0;
+    padding-bottom: 0;
+    border-bottom: none;
+}
+
+.location-icon {
+    font-size: 2rem;
+    flex-shrink: 0;
+}
+
+.location-info-content h4 {
+    font-family: var(--font-serif);
+    font-size: 1.3rem;
+    color: var(--color-forest-green);
+    margin-bottom: var(--spacing-xs);
+    font-weight: 400;
+}
+
+.location-info-content p {
+    font-family: var(--font-sans);
+    font-size: 1rem;
+    color: var(--color-text-secondary);
+    line-height: 1.6;
+    margin: 0;
+}
+
+/* Map Container */
+.map-container {
+    background: var(--card-bg);
+    backdrop-filter: blur(10px);
+    padding: var(--spacing-lg);
+    border-radius: 16px;
+    border: 1px solid rgba(154, 181, 160, 0.3);
+    box-shadow: 0 10px 40px rgba(90, 124, 90, 0.1);
+    text-align: center;
+}
+
+.map-title {
+    font-family: var(--font-serif);
+    font-size: 1.5rem;
+    color: var(--color-forest-green);
+    margin-bottom: var(--spacing-xs);
+    font-weight: 400;
+}
+
+.map-subtitle {
+    font-family: var(--font-sans);
+    font-size: 0.9rem;
+    color: var(--color-text-secondary);
+    margin-bottom: var(--spacing-md);
+    font-style: italic;
+}
+
+.map-wrapper {
+    margin-bottom: var(--spacing-md);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 5px 20px rgba(90, 124, 90, 0.2);
+}
+
+.map-wrapper iframe {
+    width: 100%;
+    height: 300px;
+    border: none;
+    display: block;
+}
+
+.map-link-button {
+    display: inline-block;
+    padding: var(--spacing-sm) var(--spacing-md);
+    background: linear-gradient(135deg, var(--color-forest-green), var(--color-sage-green));
+    color: white;
+    text-decoration: none;
+    border-radius: 8px;
+    font-family: var(--font-sans);
+    font-size: 0.95rem;
+    transition: var(--transition-gentle);
+    box-shadow: 0 4px 15px rgba(90, 124, 90, 0.3);
+}
+
+.map-link-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(90, 124, 90, 0.4);
+}
+
+/* ============================================
+   PERSONAL NOTE SECTION
+   ============================================ */
+
+.personal-note-section {
+    min-height: auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--spacing-xl) var(--spacing-md);
+    position: relative;
+    z-index: 2;
+    background: var(--bg-primary);
+}
+
+.personal-note-container {
+    max-width: 700px;
+    width: 100%;
+}
+
+.personal-note-card {
+    background: var(--card-bg);
+    backdrop-filter: blur(10px);
+    padding: var(--spacing-lg);
+    border-radius: 16px;
+    border: 1px solid rgba(154, 181, 160, 0.3);
+    box-shadow: 0 10px 40px rgba(90, 124, 90, 0.1);
+    text-align: center;
+}
+
+.personal-note-title {
+    font-family: var(--font-serif);
+    font-size: clamp(1.5rem, 3vw, 2rem);
+    color: var(--color-forest-green);
+    margin-bottom: var(--spacing-md);
+    font-weight: 400;
+}
+
+.personal-note-content {
+    text-align: left;
+}
+
+.personal-note-text {
+    font-family: var(--font-sans);
+    font-size: 1.05rem;
+    color: var(--color-text-primary);
+    line-height: 1.8;
+    margin-bottom: var(--spacing-md);
+}
+
+.personal-note-text:last-child {
+    margin-bottom: 0;
+}
+
+/* ============================================
    APPRECIATION SECTION
    ============================================ */
 
@@ -1368,6 +1556,49 @@ html {
     box-shadow: 0 0 0 3px rgba(154, 181, 160, 0.2);
 }
 
+/* Time Picker */
+.time-picker-container {
+    margin-bottom: var(--spacing-md);
+    text-align: center;
+}
+
+.time-picker-label {
+    display: block;
+    font-family: var(--font-sans);
+    font-size: 0.95rem;
+    color: var(--color-text-secondary);
+    margin-bottom: var(--spacing-sm);
+    font-weight: 300;
+}
+
+.time-picker {
+    width: 100%;
+    max-width: 300px;
+    padding: var(--spacing-sm);
+    border: 1px solid rgba(154, 181, 160, 0.4);
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.9);
+    font-family: var(--font-sans);
+    font-size: 1rem;
+    color: var(--color-text-primary);
+    transition: var(--transition-gentle);
+    margin: 0 auto;
+    display: block;
+}
+
+.time-picker:focus {
+    outline: none;
+    border-color: var(--color-sage-green);
+    box-shadow: 0 0 0 3px rgba(154, 181, 160, 0.2);
+}
+
+.time-picker-hint {
+    font-size: 0.85rem;
+    color: var(--color-text-secondary);
+    margin-top: var(--spacing-xs);
+    font-style: italic;
+}
+
 .response-buttons {
     display: flex;
     flex-direction: column;
@@ -1703,6 +1934,18 @@ html {
 [data-theme="dark"] .email-status-message.error {
     background: linear-gradient(135deg, rgba(200, 120, 120, 0.2), rgba(220, 140, 140, 0.2));
     border-color: rgba(200, 120, 120, 0.4);
+}
+
+/* Confetti Animation */
+@keyframes confettiFall {
+    0% {
+        transform: translateY(0) rotate(0deg);
+        opacity: 1;
+    }
+    100% {
+        transform: translateY(100vh) rotate(720deg);
+        opacity: 0;
+    }
 }
 
 .no-reason-textarea:focus {
