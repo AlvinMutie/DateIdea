@@ -31,15 +31,8 @@ function getTargetDate() {
     return DEFAULT_TARGET_DATE;
 }
 
-// Multiple surprise messages
-const SURPRISE_MESSAGES = [
-    "You're wonderful, just as you are.",
-    "Your smile makes everything brighter.",
-    "I'm grateful to know you.",
-    "You bring so much light into the world.",
-    "Being around you feels like home.",
-    "DOOM DOOM DARKNESS" // Special confetti message
-];
+// Surprise message - DOOM DOOM DARKNESS with confetti!
+const SURPRISE_MESSAGE = "DOOM DOOM DARKNESS";
 
 // ============================================
 // SCROLL ANIMATIONS
@@ -205,7 +198,7 @@ function animateQuestionText() {
 }
 
 /**
- * Animate location text word by word with shimmer
+ * Animate location text word by word with shimmer and confetti
  */
 function animateLocationText() {
     const locationText = document.getElementById('locationText');
@@ -213,14 +206,28 @@ function animateLocationText() {
 
     const words = locationText.querySelectorAll('.location-word');
     let delay = 0;
+    let confettiTriggered = false;
 
-    words.forEach((word) => {
+    words.forEach((word, index) => {
         setTimeout(() => {
             word.classList.add('visible');
             word.style.opacity = '1';
             word.style.transform = 'scale(1)';
+            
+            // Add bounce animation
+            word.style.animation = 'locationBounce 0.6s ease-out';
+            
+            // Trigger confetti when last word appears
+            if (index === words.length - 1 && !confettiTriggered) {
+                confettiTriggered = true;
+                setTimeout(() => {
+                    triggerConfetti();
+                    // Add extra sparkle effect
+                    locationText.classList.add('sparkle');
+                }, 300);
+            }
         }, delay);
-        delay += 200;
+        delay += 250;
     });
 
     // Add shimmer effect after all words are visible
@@ -244,44 +251,33 @@ function initSurpriseButton() {
     if (!surpriseButton || !surpriseMessage || !surpriseText) return;
 
     let isRevealed = false;
-    let messageIndex = 0;
 
     surpriseButton.addEventListener('click', () => {
         if (!isRevealed) {
-            // Get random message (or cycle through)
-            messageIndex = Math.floor(Math.random() * SURPRISE_MESSAGES.length);
-            surpriseText.textContent = SURPRISE_MESSAGES[messageIndex];
+            // Show DOOM DOOM DARKNESS message
+            surpriseText.textContent = SURPRISE_MESSAGE;
             surpriseMessage.classList.add('revealed');
             isRevealed = true;
             
-            // Check if it's the DOOM message and trigger confetti
-            if (SURPRISE_MESSAGES[messageIndex] === 'DOOM DOOM DARKNESS') {
-                triggerConfetti();
-            }
+            // Trigger confetti immediately
+            triggerConfetti();
+            
+            // Add dramatic effect to the message
+            surpriseText.style.animation = 'doomReveal 0.8s ease-out';
         } else {
-            // Cycle to next message
-            messageIndex = (messageIndex + 1) % SURPRISE_MESSAGES.length;
-            surpriseText.textContent = SURPRISE_MESSAGES[messageIndex];
-            // Brief animation
-            surpriseMessage.style.opacity = '0';
-            setTimeout(() => {
-                surpriseMessage.style.opacity = '1';
-                
-                // Check if it's the DOOM message and trigger confetti
-                if (SURPRISE_MESSAGES[messageIndex] === 'DOOM DOOM DARKNESS') {
-                    triggerConfetti();
-                }
-            }, 200);
+            // Re-trigger confetti on subsequent clicks
+            triggerConfetti();
+            surpriseText.style.animation = 'doomReveal 0.8s ease-out';
         }
     });
 }
 
 /**
- * Create confetti effect
+ * Create confetti effect with enhanced animation
  */
 function triggerConfetti() {
-    const confettiCount = 100;
-    const colors = ['#5a7c5a', '#9fb5a0', '#8b7355', '#c4d5c4', '#f5f1e8', '#6b5d4f'];
+    const confettiCount = 150; // More confetti for better effect
+    const colors = ['#5a7c5a', '#9fb5a0', '#8b7355', '#c4d5c4', '#f5f1e8', '#6b5d4f', '#7fa07f', '#b5d5b5'];
     const confettiContainer = document.createElement('div');
     confettiContainer.style.position = 'fixed';
     confettiContainer.style.top = '0';
@@ -295,20 +291,23 @@ function triggerConfetti() {
     for (let i = 0; i < confettiCount; i++) {
         const confetti = document.createElement('div');
         confetti.style.position = 'absolute';
-        confetti.style.width = Math.random() * 10 + 5 + 'px';
-        confetti.style.height = Math.random() * 10 + 5 + 'px';
+        confetti.style.width = Math.random() * 12 + 6 + 'px';
+        confetti.style.height = Math.random() * 12 + 6 + 'px';
         confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
         confetti.style.left = Math.random() * 100 + '%';
-        confetti.style.top = '-10px';
+        confetti.style.top = '-20px';
         confetti.style.borderRadius = Math.random() > 0.5 ? '50%' : '0';
-        confetti.style.opacity = Math.random() * 0.5 + 0.5;
+        confetti.style.opacity = Math.random() * 0.6 + 0.4;
         
-        const angle = Math.random() * 360;
-        const velocity = Math.random() * 3 + 2;
+        // Add random rotation and horizontal movement
+        const startX = Math.random() * 100;
+        const endX = startX + (Math.random() - 0.5) * 50;
         const rotation = Math.random() * 720;
         
-        confetti.style.transform = `rotate(${angle}deg)`;
-        confetti.style.animation = `confettiFall ${Math.random() * 3 + 2}s linear forwards`;
+        confetti.style.transform = `translateX(${startX}%) rotate(0deg)`;
+        confetti.style.animation = `confettiFall ${Math.random() * 2 + 2}s ease-out forwards`;
+        confetti.style.setProperty('--end-x', endX + '%');
+        confetti.style.setProperty('--rotation', rotation + 'deg');
         
         confettiContainer.appendChild(confetti);
     }

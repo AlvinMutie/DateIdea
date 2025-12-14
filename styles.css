@@ -799,6 +799,71 @@ body {
     }
 }
 
+/* Location bounce animation */
+@keyframes locationBounce {
+    0% {
+        transform: scale(0.8) translateY(20px);
+        opacity: 0;
+    }
+    50% {
+        transform: scale(1.1) translateY(-10px);
+    }
+    100% {
+        transform: scale(1) translateY(0);
+        opacity: 1;
+    }
+}
+
+/* Sparkle effect for location */
+.location-text.sparkle {
+    position: relative;
+}
+
+.location-text.sparkle::after {
+    content: '✨';
+    position: absolute;
+    font-size: 2rem;
+    animation: sparkleFloat 2s ease-out infinite;
+    pointer-events: none;
+}
+
+.location-text.sparkle::before {
+    content: '✨';
+    position: absolute;
+    font-size: 1.5rem;
+    animation: sparkleFloat 2s ease-out 0.5s infinite;
+    pointer-events: none;
+}
+
+@keyframes sparkleFloat {
+    0% {
+        opacity: 1;
+        transform: translateY(0) scale(1) rotate(0deg);
+    }
+    100% {
+        opacity: 0;
+        transform: translateY(-50px) scale(0.5) rotate(360deg);
+    }
+}
+
+/* DOOM reveal animation */
+@keyframes doomReveal {
+    0% {
+        transform: scale(0.5) rotate(-10deg);
+        opacity: 0;
+        filter: blur(10px);
+    }
+    50% {
+        transform: scale(1.2) rotate(5deg);
+        filter: blur(5px);
+    }
+    100% {
+        transform: scale(1) rotate(0deg);
+        opacity: 1;
+        filter: blur(0);
+    }
+}
+
 /* ============================================
    LOCATION DETAILS SECTION
    ============================================ */
@@ -1135,6 +1200,19 @@ html {
     box-shadow: 0 10px 30px rgba(90, 124, 90, 0.15);
     border-color: rgba(154, 181, 160, 0.4);
     background: var(--card-bg);
+    animation: cardHover 0.6s ease-out;
+}
+
+@keyframes cardHover {
+    0% {
+        transform: translateY(0) scale(1);
+    }
+    50% {
+        transform: translateY(-8px) scale(1.03);
+    }
+    100% {
+        transform: translateY(-5px) scale(1.01);
+    }
 }
 
 .appreciation-card:active {
@@ -1171,10 +1249,17 @@ html {
 }
 
 .surprise-button:hover {
-    transform: translateY(-2px);
+    transform: translateY(-2px) scale(1.05);
     background: rgba(255, 255, 255, 0.9);
     box-shadow: 0 5px 20px rgba(90, 124, 90, 0.2);
     border-color: rgba(154, 181, 160, 0.5);
+    animation: buttonShake 0.5s ease-out;
+}
+
+@keyframes buttonShake {
+    0%, 100% { transform: translateY(-2px) scale(1.05) rotate(0deg); }
+    25% { transform: translateY(-2px) scale(1.05) rotate(-2deg); }
+    75% { transform: translateY(-2px) scale(1.05) rotate(2deg); }
 }
 
 .surprise-button:active {
@@ -1208,6 +1293,20 @@ html {
     opacity: 1;
     transform: translateY(0);
     max-height: 200px;
+    animation: messageReveal 0.8s ease-out;
+}
+
+@keyframes messageReveal {
+    0% {
+        opacity: 0;
+        transform: translateY(20px) scale(0.9);
+        filter: blur(5px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+        filter: blur(0);
+    }
 }
 
 .surprise-message p {
@@ -1939,11 +2038,11 @@ html {
 /* Confetti Animation */
 @keyframes confettiFall {
     0% {
-        transform: translateY(0) rotate(0deg);
+        transform: translateX(var(--start-x, 0)) translateY(0) rotate(0deg);
         opacity: 1;
     }
     100% {
-        transform: translateY(100vh) rotate(720deg);
+        transform: translateX(var(--end-x, 0)) translateY(100vh) rotate(var(--rotation, 720deg));
         opacity: 0;
     }
 }
