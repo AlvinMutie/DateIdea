@@ -14,7 +14,20 @@ const EMAILJS_PUBLIC_KEY = '9LLwjBULRKf4teFCy';
 
 const SUGGESTED_DATE = 'Wednesday, 17th December 2025';
 const SUGGESTED_DATE_ISO = '2025-12-17';
-const TARGET_DATE = new Date('2025-12-17T10:00:00'); // 10 AM on the date
+const DEFAULT_TARGET_DATE = new Date('2025-12-17T10:00:00'); // 10 AM on the date
+
+/**
+ * Get the target date for countdown (from selected date or default)
+ */
+function getTargetDate() {
+    const storedDate = localStorage.getItem('selectedDateISO');
+    if (storedDate) {
+        // Parse the stored date and set to 10 AM
+        const [year, month, day] = storedDate.split('-').map(Number);
+        return new Date(year, month - 1, day, 10, 0, 0);
+    }
+    return DEFAULT_TARGET_DATE;
+}
 
 // Multiple surprise messages
 const SURPRISE_MESSAGES = [
@@ -323,8 +336,16 @@ function initFormHandling() {
             finalYesButton.style.opacity = '0.9';
             finalYesButton.style.cursor = 'default';
             
+            // Store the selected date for countdown
+            const datePicker = document.getElementById('selected-date');
+            if (datePicker && datePicker.value) {
+                localStorage.setItem('selectedDateISO', datePicker.value);
+            } else {
+                localStorage.setItem('selectedDateISO', SUGGESTED_DATE_ISO);
+            }
+            
             // Show prominent success message
-            showEmailStatusMessage(true, '✅ Your response has been sent successfully! I\'ll be in touch soon 🌿');
+            showEmailStatusMessage(true, '✅ Your answer has been submitted! I\'ll be in touch soon 🌿');
             
             // Show receipt overlay for clear confirmation
             const receiptOverlay = document.getElementById('receiptOverlay');
@@ -332,7 +353,7 @@ function initFormHandling() {
             if (receiptBody) {
                 receiptBody.innerHTML = `
                     <p class="receipt-message" style="font-size: 1.2rem; color: var(--color-forest-green); margin-bottom: 1rem;">
-                        ✅ Your response has been sent!
+                        ✅ Your answer has been submitted!
                     </p>
                     <p class="receipt-message">Thank you so much! 🌿</p>
                     <p class="receipt-message">I'm really looking forward to our date.</p>
@@ -412,22 +433,22 @@ function initFormHandling() {
                 finalNoButton.style.opacity = '0.9';
                 finalNoButton.style.cursor = 'default';
                 
-                // Show prominent success message
-                showEmailStatusMessage(true, '✅ Thank you for your honest response 🤍');
-                
-                // Show receipt overlay
-                const receiptOverlay = document.getElementById('receiptOverlay');
-                const receiptBody = receiptOverlay?.querySelector('.receipt-body');
-                if (receiptBody) {
-                    receiptBody.innerHTML = `
-                        <p class="receipt-message" style="font-size: 1.2rem; color: var(--color-forest-green); margin-bottom: 1rem;">
-                            ✅ Your response has been sent!
-                        </p>
-                        <p class="receipt-message">Thank you for being honest with me.</p>
-                        <p class="receipt-message">Your answer has been received. 🤍</p>
-                    `;
-                }
-                showReceipt();
+            // Show prominent success message
+            showEmailStatusMessage(true, '✅ Your answer has been submitted! 🤍');
+            
+            // Show receipt overlay
+            const receiptOverlay = document.getElementById('receiptOverlay');
+            const receiptBody = receiptOverlay?.querySelector('.receipt-body');
+            if (receiptBody) {
+                receiptBody.innerHTML = `
+                    <p class="receipt-message" style="font-size: 1.2rem; color: var(--color-forest-green); margin-bottom: 1rem;">
+                        ✅ Your answer has been submitted!
+                    </p>
+                    <p class="receipt-message">Thank you for being honest with me.</p>
+                    <p class="receipt-message">Your answer has been received. 🤍</p>
+                `;
+            }
+            showReceipt();
             } else {
                 console.error('❌ Email failed to send:', emailResult.error);
                 showEmailStatusMessage(false, `❌ Failed to send: ${emailResult.error || 'Unknown error'}. Please check console and try again.`);
@@ -722,12 +743,21 @@ function initCountdown() {
     const countdownDays = document.getElementById('countdownDays');
     const countdownHours = document.getElementById('countdownHours');
     const countdownMinutes = document.getElementById('countdownMinutes');
+    const countdownMessage = document.querySelector('.countdown-message');
     
     if (!countdownSection || !countdownDays || !countdownHours || !countdownMinutes) return;
 
+    // Update countdown message with selected date
+    const targetDate = getTargetDate();
+    const selectedDateFormatted = formatDate(targetDate);
+    if (countdownMessage) {
+        countdownMessage.textContent = `Until we meet at Nairobi Safari Walk on ${selectedDateFormatted} 🤍`;
+    }
+
     function updateCountdown() {
         const now = new Date();
-        const difference = TARGET_DATE - now;
+        const targetDate = getTargetDate(); // Use selected date or default
+        const difference = targetDate - now;
 
         if (difference > 0) {
             const days = Math.floor(difference / (1000 * 60 * 60 * 24));
