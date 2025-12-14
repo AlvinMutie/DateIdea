@@ -1655,6 +1655,33 @@ html {
     box-shadow: 0 0 0 3px rgba(154, 181, 160, 0.2);
 }
 
+/* Dark mode styles for date picker */
+[data-theme="dark"] .date-picker {
+    background: rgba(42, 42, 37, 0.95);
+    color: var(--color-text-primary);
+    border-color: rgba(181, 213, 181, 0.4);
+}
+
+[data-theme="dark"] .date-picker:focus {
+    border-color: var(--color-sage-green);
+    box-shadow: 0 0 0 3px rgba(181, 213, 181, 0.2);
+    background: rgba(42, 42, 37, 1);
+}
+
+/* Ensure calendar popup is visible in dark mode */
+[data-theme="dark"] .date-picker::-webkit-calendar-picker-indicator {
+    filter: invert(1);
+    opacity: 0.8;
+    cursor: pointer;
+}
+
+[data-theme="dark"] .date-picker::-webkit-datetime-edit-text,
+[data-theme="dark"] .date-picker::-webkit-datetime-edit-month-field,
+[data-theme="dark"] .date-picker::-webkit-datetime-edit-day-field,
+[data-theme="dark"] .date-picker::-webkit-datetime-edit-year-field {
+    color: var(--color-text-primary);
+}
+
 /* Time Picker */
 .time-picker-container {
     margin-bottom: var(--spacing-md);
@@ -1689,6 +1716,19 @@ html {
     outline: none;
     border-color: var(--color-sage-green);
     box-shadow: 0 0 0 3px rgba(154, 181, 160, 0.2);
+}
+
+/* Dark mode styles for time picker */
+[data-theme="dark"] .time-picker {
+    background: rgba(42, 42, 37, 0.95);
+    color: var(--color-text-primary);
+    border-color: rgba(181, 213, 181, 0.4);
+}
+
+[data-theme="dark"] .time-picker:focus {
+    border-color: var(--color-sage-green);
+    box-shadow: 0 0 0 3px rgba(181, 213, 181, 0.2);
+    background: rgba(42, 42, 37, 1);
 }
 
 .time-picker-hint {
@@ -1866,6 +1906,24 @@ html {
     box-shadow: 0 0 0 3px rgba(154, 181, 160, 0.2);
 }
 
+/* Dark mode styles for suggestions textarea */
+[data-theme="dark"] .suggestions-textarea {
+    background: rgba(42, 42, 37, 0.95);
+    color: var(--color-text-primary);
+    border-color: rgba(181, 213, 181, 0.4);
+}
+
+[data-theme="dark"] .suggestions-textarea:focus {
+    border-color: var(--color-sage-green);
+    box-shadow: 0 0 0 3px rgba(181, 213, 181, 0.2);
+    background: rgba(42, 42, 37, 1);
+}
+
+[data-theme="dark"] .suggestions-textarea::placeholder {
+    color: var(--color-text-secondary);
+    opacity: 0.7;
+}
+
 /* Final Response Section */
 .final-response-container {
     margin: var(--spacing-lg) 0;
@@ -1969,6 +2027,24 @@ html {
     outline: none;
     border-color: var(--color-sage-green);
     box-shadow: 0 0 0 3px rgba(154, 181, 160, 0.1);
+}
+
+/* Dark mode styles for no reason textarea */
+[data-theme="dark"] .no-reason-textarea {
+    background: rgba(42, 42, 37, 0.95);
+    color: var(--color-text-primary);
+    border-color: rgba(181, 213, 181, 0.4);
+}
+
+[data-theme="dark"] .no-reason-textarea:focus {
+    border-color: var(--color-sage-green);
+    box-shadow: 0 0 0 3px rgba(181, 213, 181, 0.2);
+    background: rgba(42, 42, 37, 1);
+}
+
+[data-theme="dark"] .no-reason-textarea::placeholder {
+    color: var(--color-text-secondary);
+    opacity: 0.7;
 }
 
 /* Email Status Message */
@@ -2211,6 +2287,35 @@ button:focus-visible,
 input:focus-visible {
     outline: 3px solid var(--color-sage-green);
     outline-offset: 2px;
+}
+
+/* General dark mode styles for all input fields */
+[data-theme="dark"] input[type="text"],
+[data-theme="dark"] input[type="email"],
+[data-theme="dark"] input[type="date"],
+[data-theme="dark"] input[type="time"],
+[data-theme="dark"] input[type="number"],
+[data-theme="dark"] textarea {
+    background: rgba(42, 42, 37, 0.95) !important;
+    color: var(--color-text-primary) !important;
+    border-color: rgba(181, 213, 181, 0.4) !important;
+}
+
+[data-theme="dark"] input[type="text"]:focus,
+[data-theme="dark"] input[type="email"]:focus,
+[data-theme="dark"] input[type="date"]:focus,
+[data-theme="dark"] input[type="time"]:focus,
+[data-theme="dark"] input[type="number"]:focus,
+[data-theme="dark"] textarea:focus {
+    background: rgba(42, 42, 37, 1) !important;
+    border-color: var(--color-sage-green) !important;
+    box-shadow: 0 0 0 3px rgba(181, 213, 181, 0.2) !important;
+}
+
+[data-theme="dark"] input::placeholder,
+[data-theme="dark"] textarea::placeholder {
+    color: var(--color-text-secondary) !important;
+    opacity: 0.7 !important;
 }
 
 /* High contrast mode support */
