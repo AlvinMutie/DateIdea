@@ -301,18 +301,45 @@ function initFormHandling() {
         const selectedDate = getSelectedDate();
         const suggestions = document.getElementById('suggestions')?.value || '';
         
-        // Send email via EmailJS immediately
-        showEmailStatusMessage(false, 'Sending your response...');
+        // Show sending status immediately
+        showEmailStatusMessage(false, '⏳ Sending your response...');
+        finalYesButton.textContent = 'Sending...';
         
+        // Send email via EmailJS immediately
+        console.log('Yes button clicked - sending email via EmailJS...');
         const emailResult = await sendEmailViaEmailJS('YES', {
             selectedDate: selectedDate,
             suggestions: suggestions,
             noReason: ''
         });
         
-        // Show result
+        // Show result with prominent confirmation
         if (emailResult.success) {
-            showEmailStatusMessage(true, '✓ Your response has been sent! I\'ll be in touch soon 🌿');
+            console.log('✅ Email sent successfully!');
+            
+            // Update button to show success
+            finalYesButton.textContent = '✓ Sent!';
+            finalYesButton.style.background = 'linear-gradient(135deg, #4a7c4a, #7fa07f)';
+            finalYesButton.style.opacity = '0.9';
+            finalYesButton.style.cursor = 'default';
+            
+            // Show prominent success message
+            showEmailStatusMessage(true, '✅ Your response has been sent successfully! I\'ll be in touch soon 🌿');
+            
+            // Show receipt overlay for clear confirmation
+            const receiptOverlay = document.getElementById('receiptOverlay');
+            const receiptBody = receiptOverlay?.querySelector('.receipt-body');
+            if (receiptBody) {
+                receiptBody.innerHTML = `
+                    <p class="receipt-message" style="font-size: 1.2rem; color: var(--color-forest-green); margin-bottom: 1rem;">
+                        ✅ Your response has been sent!
+                    </p>
+                    <p class="receipt-message">Thank you so much! 🌿</p>
+                    <p class="receipt-message">I'm really looking forward to our date.</p>
+                    <p class="receipt-message">I'll be in touch soon with more details.</p>
+                `;
+            }
+            showReceipt();
             
             // Store acceptance and show countdown
             localStorage.setItem('dateAccepted', 'true');
@@ -322,20 +349,17 @@ function initFormHandling() {
                 initCountdown();
                 setTimeout(() => {
                     countdownSection.scrollIntoView({ behavior: 'smooth' });
-                }, 2000);
+                }, 3000);
             }
-            
-            // Show thank you message
-            showThankYouMessage();
-            
-            // Keep button disabled after success
-            finalYesButton.style.opacity = '0.7';
-            finalYesButton.style.cursor = 'not-allowed';
         } else {
-            showEmailStatusMessage(false, `Failed to send: ${emailResult.error || 'Unknown error'}. Please try again.`);
+            console.error('❌ Email failed to send:', emailResult.error);
+            showEmailStatusMessage(false, `❌ Failed to send: ${emailResult.error || 'Unknown error'}. Please check console and try again.`);
             finalYesButton.disabled = false;
             finalYesButton.textContent = 'Yes 🌿';
             finalYesButton.classList.remove('clicked');
+            finalYesButton.style.background = '';
+            finalYesButton.style.opacity = '';
+            finalYesButton.style.cursor = '';
         }
     });
     
@@ -368,27 +392,51 @@ function initFormHandling() {
             const noReason = noReasonTextarea?.value || '';
             
             // Send email via EmailJS
-            showEmailStatusMessage(false, 'Sending your response...');
+            showEmailStatusMessage(false, '⏳ Sending your response...');
+            finalNoButton.textContent = 'Sending...';
             
+            console.log('No button clicked - sending email via EmailJS...');
             const emailResult = await sendEmailViaEmailJS('NO', {
                 selectedDate: selectedDate,
                 suggestions: suggestions,
                 noReason: noReason
             });
             
-            // Show result
+            // Show result with prominent confirmation
             if (emailResult.success) {
-                showEmailStatusMessage(true, '✓ Thank you for your honest response 🤍');
-                showReceipt('Thank you for being honest with me. Your answer has been received. 🤍');
+                console.log('✅ Email sent successfully!');
                 
-                // Keep button disabled after success
-                finalNoButton.style.opacity = '0.7';
-                finalNoButton.style.cursor = 'not-allowed';
+                // Update button to show success
+                finalNoButton.textContent = '✓ Sent!';
+                finalNoButton.style.background = 'rgba(255, 255, 255, 0.9)';
+                finalNoButton.style.opacity = '0.9';
+                finalNoButton.style.cursor = 'default';
+                
+                // Show prominent success message
+                showEmailStatusMessage(true, '✅ Thank you for your honest response 🤍');
+                
+                // Show receipt overlay
+                const receiptOverlay = document.getElementById('receiptOverlay');
+                const receiptBody = receiptOverlay?.querySelector('.receipt-body');
+                if (receiptBody) {
+                    receiptBody.innerHTML = `
+                        <p class="receipt-message" style="font-size: 1.2rem; color: var(--color-forest-green); margin-bottom: 1rem;">
+                            ✅ Your response has been sent!
+                        </p>
+                        <p class="receipt-message">Thank you for being honest with me.</p>
+                        <p class="receipt-message">Your answer has been received. 🤍</p>
+                    `;
+                }
+                showReceipt();
             } else {
-                showEmailStatusMessage(false, `Failed to send: ${emailResult.error || 'Unknown error'}. Please try again.`);
+                console.error('❌ Email failed to send:', emailResult.error);
+                showEmailStatusMessage(false, `❌ Failed to send: ${emailResult.error || 'Unknown error'}. Please check console and try again.`);
                 finalNoButton.disabled = false;
                 finalNoButton.textContent = 'No 🤍';
                 finalNoButton.classList.remove('clicked');
+                finalNoButton.style.background = '';
+                finalNoButton.style.opacity = '';
+                finalNoButton.style.cursor = '';
             }
         }, 500);
     });
@@ -771,8 +819,8 @@ function initCustomCursor() {
             isAnimating = true;
         }
         
-        // Easing for smooth movement (lerp)
-        const ease = 0.15;
+        // Easing for smooth movement (lerp) - higher value = faster/more responsive
+        const ease = 0.35;
         cursorX += (mouseX - cursorX) * ease;
         cursorY += (mouseY - cursorY) * ease;
         
@@ -865,19 +913,30 @@ function initEmailJS() {
 async function sendEmailViaEmailJS(responseType, formData) {
     // Check if EmailJS is available
     if (typeof emailjs === 'undefined') {
-        console.warn('EmailJS SDK not loaded - ensure script is included in HTML');
-        return { success: false, error: 'EmailJS SDK not loaded' };
+        console.error('❌ EmailJS SDK not loaded - ensure script is included in HTML');
+        console.log('Checking for emailjs object:', typeof emailjs);
+        return { success: false, error: 'EmailJS SDK not loaded. Check browser console for details.' };
     }
+    
+    console.log('📧 EmailJS SDK found, initializing...');
     
     // Ensure EmailJS is initialized with public key
     try {
         if (emailjs.init) {
             emailjs.init(EMAILJS_PUBLIC_KEY);
+            console.log('✅ EmailJS initialized with public key');
+        } else {
+            console.warn('⚠️ emailjs.init not available, may already be initialized');
         }
     } catch (e) {
         // May already be initialized, continue
-        console.log('EmailJS initialization check:', e.message || 'Already initialized');
+        console.log('ℹ️ EmailJS initialization check:', e.message || 'Already initialized');
     }
+    
+    // Verify service and template IDs
+    console.log('📋 Using Service ID:', EMAILJS_SERVICE_ID);
+    console.log('📋 Using Template ID:', EMAILJS_TEMPLATE_ID);
+    console.log('📋 Using Public Key:', EMAILJS_PUBLIC_KEY.substring(0, 10) + '...');
     
     try {
         // Prepare template parameters
@@ -894,7 +953,7 @@ async function sendEmailViaEmailJS(responseType, formData) {
                 : `She said NO. Reason: ${formData.noReason || 'Not provided'}`
         };
         
-        console.log('Sending email via EmailJS with params:', templateParams);
+        console.log('📤 Sending email via EmailJS with params:', templateParams);
         
         const result = await emailjs.send(
             EMAILJS_SERVICE_ID,
@@ -902,11 +961,27 @@ async function sendEmailViaEmailJS(responseType, formData) {
             templateParams
         );
         
-        console.log('Email sent successfully via EmailJS:', result);
+        console.log('✅ Email sent successfully via EmailJS!', result);
+        console.log('📧 Status:', result.status);
+        console.log('📧 Text:', result.text);
         return { success: true, result: result };
     } catch (error) {
-        console.error('EmailJS error:', error);
-        return { success: false, error: error.message || 'Unknown error' };
+        console.error('❌ EmailJS error details:', error);
+        console.error('❌ Error code:', error.code);
+        console.error('❌ Error message:', error.message);
+        console.error('❌ Error text:', error.text);
+        
+        // Provide more helpful error message
+        let errorMessage = 'Unknown error';
+        if (error.text) {
+            errorMessage = error.text;
+        } else if (error.message) {
+            errorMessage = error.message;
+        } else if (error.code) {
+            errorMessage = `Error code: ${error.code}`;
+        }
+        
+        return { success: false, error: errorMessage };
     }
 }
 
@@ -1098,24 +1173,32 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         
         // Initialize EmailJS - wait for SDK to load
-        const initEmailJSWithRetry = () => {
+        const initEmailJSWithRetry = (attempts = 0) => {
             if (typeof emailjs !== 'undefined') {
                 try {
                     emailjs.init(EMAILJS_PUBLIC_KEY);
-                    console.log('EmailJS initialized successfully');
+                    console.log('✅ EmailJS initialized successfully with public key:', EMAILJS_PUBLIC_KEY.substring(0, 10) + '...');
+                    console.log('✅ Service ID:', EMAILJS_SERVICE_ID);
+                    console.log('✅ Template ID:', EMAILJS_TEMPLATE_ID);
                 } catch (error) {
-                    console.error('Error initializing EmailJS:', error);
+                    console.error('❌ Error initializing EmailJS:', error);
                 }
             } else {
-                // Retry after delay
-                setTimeout(initEmailJSWithRetry, 500);
+                attempts++;
+                if (attempts < 10) {
+                    // Retry after delay (up to 10 times = 5 seconds)
+                    console.log(`⏳ Waiting for EmailJS SDK to load... (attempt ${attempts}/10)`);
+                    setTimeout(() => initEmailJSWithRetry(attempts), 500);
+                } else {
+                    console.error('❌ EmailJS SDK failed to load after 10 attempts. Check if script is included in HTML.');
+                }
             }
         };
         
         try {
             initEmailJSWithRetry();
         } catch (error) {
-            console.error('Error setting up EmailJS initialization:', error);
+            console.error('❌ Error setting up EmailJS initialization:', error);
         }
         
         // Initialize custom cursor (with delay to ensure DOM is ready)
