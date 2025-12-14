@@ -1074,6 +1074,77 @@ function showEmailStatusMessage(success, message) {
 }
 
 // ============================================
+// RESET FUNCTION (For Testing/Resetting)
+// ============================================
+
+/**
+ * Reset all stored data (for testing or when sending to a new person)
+ * Call this function in browser console: resetWebsiteData()
+ */
+function resetWebsiteData() {
+    // Clear all localStorage items
+    localStorage.removeItem('dateAccepted');
+    localStorage.removeItem('selectedDateISO');
+    localStorage.removeItem('theme'); // Optional: keep theme preference
+    
+    // Hide countdown section
+    const countdownSection = document.getElementById('countdownSection');
+    if (countdownSection) {
+        countdownSection.style.display = 'none';
+    }
+    
+    // Reset form
+    const form = document.getElementById('responseForm');
+    if (form) {
+        form.reset();
+    }
+    
+    // Reset buttons
+    const finalYesButton = document.getElementById('finalYesButton');
+    const finalNoButton = document.getElementById('finalNoButton');
+    if (finalYesButton) {
+        finalYesButton.disabled = false;
+        finalYesButton.textContent = 'Yes 🌿';
+        finalYesButton.classList.remove('clicked');
+        finalYesButton.style.background = '';
+        finalYesButton.style.opacity = '';
+        finalYesButton.style.cursor = '';
+    }
+    if (finalNoButton) {
+        finalNoButton.disabled = false;
+        finalNoButton.textContent = 'No 🤍';
+        finalNoButton.classList.remove('clicked');
+        finalNoButton.style.background = '';
+        finalNoButton.style.opacity = '';
+        finalNoButton.style.cursor = '';
+    }
+    
+    // Remove status messages
+    const statusMessage = document.getElementById('emailStatusMessage');
+    if (statusMessage) {
+        statusMessage.remove();
+    }
+    
+    // Close receipt overlay
+    const receiptOverlay = document.getElementById('receiptOverlay');
+    if (receiptOverlay) {
+        receiptOverlay.classList.remove('show');
+    }
+    
+    // Reset date picker to default
+    const datePicker = document.getElementById('selected-date');
+    if (datePicker) {
+        datePicker.value = SUGGESTED_DATE_ISO;
+    }
+    
+    console.log('✅ Website data reset! Ready for a fresh start.');
+    alert('Website reset! All responses and countdown cleared. Ready to send to Sandra! 🌿');
+}
+
+// Make reset function available globally for console access
+window.resetWebsiteData = resetWebsiteData;
+
+// ============================================
 // INITIALIZATION
 // ============================================
 
