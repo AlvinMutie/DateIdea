@@ -1638,6 +1638,64 @@ html {
 .no-reason-textarea:focus {
     outline: none;
     border-color: var(--color-sage-green);
+    box-shadow: 0 0 0 3px rgba(154, 181, 160, 0.1);
+}
+
+/* Email Status Message */
+.email-status-message {
+    margin: var(--spacing-md) auto;
+    padding: var(--spacing-sm) var(--spacing-md);
+    border-radius: 12px;
+    font-family: var(--font-sans);
+    font-size: 0.95rem;
+    text-align: center;
+    max-width: 600px;
+    opacity: 0;
+    transform: translateY(-10px);
+    transition: opacity 0.4s ease-out, transform 0.4s ease-out;
+    animation: slideInStatus 0.4s ease-out forwards;
+    z-index: 10;
+    position: relative;
+}
+
+.email-status-message.success {
+    background: linear-gradient(135deg, rgba(90, 124, 90, 0.15), rgba(159, 181, 160, 0.15));
+    color: var(--color-forest-green);
+    border: 1px solid rgba(90, 124, 90, 0.3);
+    box-shadow: 0 4px 15px rgba(90, 124, 90, 0.2);
+}
+
+.email-status-message.error {
+    background: linear-gradient(135deg, rgba(180, 100, 100, 0.15), rgba(200, 120, 120, 0.15));
+    color: #8b4a4a;
+    border: 1px solid rgba(180, 100, 100, 0.3);
+    box-shadow: 0 4px 15px rgba(180, 100, 100, 0.2);
+}
+
+@keyframes slideInStatus {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+[data-theme="dark"] .email-status-message.success {
+    background: linear-gradient(135deg, rgba(127, 160, 127, 0.2), rgba(181, 213, 181, 0.2));
+    border-color: rgba(127, 160, 127, 0.4);
+}
+
+[data-theme="dark"] .email-status-message.error {
+    background: linear-gradient(135deg, rgba(200, 120, 120, 0.2), rgba(220, 140, 140, 0.2));
+    border-color: rgba(200, 120, 120, 0.4);
+}
+
+.no-reason-textarea:focus {
+    outline: none;
+    border-color: var(--color-sage-green);
     box-shadow: 0 0 0 3px rgba(154, 181, 160, 0.2);
 }
 

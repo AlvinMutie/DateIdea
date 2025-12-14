@@ -64,6 +64,9 @@ function initScrollAnimations() {
         el.style.willChange = 'opacity, transform';
     });
 
+    // Get all fade elements for fallback
+    const fadeElements = document.querySelectorAll('.fade-in-scroll, .slide-up-scroll, .scale-scroll, .fade-on-scroll');
+
     // Stagger animations for child elements
     const staggerContainers = document.querySelectorAll(
         '.appreciation-content, .response-container, .faq-container'
@@ -258,23 +261,34 @@ function initFormHandling() {
     const form = document.getElementById('responseForm');
     const finalYesButton = document.getElementById('finalYesButton');
     const finalNoButton = document.getElementById('finalNoButton');
-    const finalResponseField = document.getElementById('finalResponse');
+    const finalResponseField = document.getElementById('responseType'); // Fixed: use correct ID
     const datePicker = document.getElementById('selected-date');
     const noReasonContainer = document.getElementById('noReasonContainer');
     const noReasonTextarea = document.getElementById('no-reason');
     const submitButtonContainer = document.getElementById('submitButtonContainer');
     const submitButton = document.getElementById('submitButton');
 
-    if (!form || !finalYesButton || !finalNoButton) return;
+    if (!form || !finalYesButton || !finalNoButton) {
+        console.warn('Form or buttons not found');
+        return;
+    }
 
     // Set default date picker value to suggested date
     if (datePicker) {
         datePicker.value = SUGGESTED_DATE_ISO;
     }
     
-    // Handle Final Yes button
-    finalYesButton.addEventListener('click', () => {
-        finalResponseField.value = 'YES';
+    // Handle Final Yes button - send email immediately
+    finalYesButton.addEventListener('click', async () => {
+        // Prevent multiple clicks
+        if (finalYesButton.disabled) return;
+        
+        finalYesButton.disabled = true;
+        finalYesButton.textContent = 'Sending...';
+        
+        if (finalResponseField) {
+            finalResponseField.value = 'YES';
+        }
         finalYesButton.classList.add('clicked');
         
         // Hide no reason field if shown
@@ -283,18 +297,59 @@ function initFormHandling() {
             noReasonContainer.style.display = 'none';
         }
         
-        // Show submit button
-        if (submitButtonContainer) {
-            submitButtonContainer.style.display = 'block';
-            setTimeout(() => {
-                submitButtonContainer.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-            }, 100);
+        // Get form data
+        const selectedDate = getSelectedDate();
+        const suggestions = document.getElementById('suggestions')?.value || '';
+        
+        // Send email via EmailJS immediately
+        showEmailStatusMessage(false, 'Sending your response...');
+        
+        const emailResult = await sendEmailViaEmailJS('YES', {
+            selectedDate: selectedDate,
+            suggestions: suggestions,
+            noReason: ''
+        });
+        
+        // Show result
+        if (emailResult.success) {
+            showEmailStatusMessage(true, '✓ Your response has been sent! I\'ll be in touch soon 🌿');
+            
+            // Store acceptance and show countdown
+            localStorage.setItem('dateAccepted', 'true');
+            const countdownSection = document.getElementById('countdownSection');
+            if (countdownSection) {
+                countdownSection.style.display = 'flex';
+                initCountdown();
+                setTimeout(() => {
+                    countdownSection.scrollIntoView({ behavior: 'smooth' });
+                }, 2000);
+            }
+            
+            // Show thank you message
+            showThankYouMessage();
+            
+            // Keep button disabled after success
+            finalYesButton.style.opacity = '0.7';
+            finalYesButton.style.cursor = 'not-allowed';
+        } else {
+            showEmailStatusMessage(false, `Failed to send: ${emailResult.error || 'Unknown error'}. Please try again.`);
+            finalYesButton.disabled = false;
+            finalYesButton.textContent = 'Yes 🌿';
+            finalYesButton.classList.remove('clicked');
         }
     });
     
-    // Handle Final No button
-    finalNoButton.addEventListener('click', () => {
-        finalResponseField.value = 'NO';
+    // Handle Final No button - send email immediately
+    finalNoButton.addEventListener('click', async () => {
+        // Prevent multiple clicks
+        if (finalNoButton.disabled) return;
+        
+        finalNoButton.disabled = true;
+        finalNoButton.textContent = 'Sending...';
+        
+        if (finalResponseField) {
+            finalResponseField.value = 'NO';
+        }
         finalNoButton.classList.add('clicked');
         
         // Show no reason field
@@ -306,114 +361,49 @@ function initFormHandling() {
             }, 100);
         }
         
-        // Show submit button
-        if (submitButtonContainer) {
-            submitButtonContainer.style.display = 'block';
-            setTimeout(() => {
-                submitButtonContainer.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-            }, 100);
-        }
+        // Wait a moment for user to optionally add reason, then send
+        setTimeout(async () => {
+            const selectedDate = getSelectedDate();
+            const suggestions = document.getElementById('suggestions')?.value || '';
+            const noReason = noReasonTextarea?.value || '';
+            
+            // Send email via EmailJS
+            showEmailStatusMessage(false, 'Sending your response...');
+            
+            const emailResult = await sendEmailViaEmailJS('NO', {
+                selectedDate: selectedDate,
+                suggestions: suggestions,
+                noReason: noReason
+            });
+            
+            // Show result
+            if (emailResult.success) {
+                showEmailStatusMessage(true, '✓ Thank you for your honest response 🤍');
+                showReceipt('Thank you for being honest with me. Your answer has been received. 🤍');
+                
+                // Keep button disabled after success
+                finalNoButton.style.opacity = '0.7';
+                finalNoButton.style.cursor = 'not-allowed';
+            } else {
+                showEmailStatusMessage(false, `Failed to send: ${emailResult.error || 'Unknown error'}. Please try again.`);
+                finalNoButton.disabled = false;
+                finalNoButton.textContent = 'No 🤍';
+                finalNoButton.classList.remove('clicked');
+            }
+        }, 500);
     });
 
-    // Handle form submission
+    // Handle form submission (backup/optional - EmailJS is primary)
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
 
-        // Validate that a final response was selected
-        if (!finalResponseField.value) {
-            alert('Please select Yes or No first.');
-            return;
-        }
-
-        // Get the selected date
-        const selectedDate = getSelectedDate();
-        const suggestions = document.getElementById('suggestions')?.value || '';
-        const noReason = noReasonTextarea?.value || '';
+        // EmailJS handles the sending when buttons are clicked
+        // This form submission is just a backup for Netlify Forms
+        // Most of the logic is now in the button click handlers above
         
-        // Add selected date as a hidden field for email
-        let selectedDateField = form.querySelector('input[name="selected_date_for_email"]');
-        if (!selectedDateField) {
-            selectedDateField = document.createElement('input');
-            selectedDateField.type = 'hidden';
-            selectedDateField.name = 'selected_date_for_email';
-            form.appendChild(selectedDateField);
-        }
-        selectedDateField.value = selectedDate;
-
-        // Add timestamp
-        let timestampField = form.querySelector('input[name="timestamp"]');
-        if (!timestampField) {
-            timestampField = document.createElement('input');
-            timestampField.type = 'hidden';
-            timestampField.name = 'timestamp';
-            form.appendChild(timestampField);
-        }
-        timestampField.value = new Date().toISOString();
-
-        // Disable submit button during submission
         if (submitButton) {
-            submitButton.disabled = true;
-            submitButton.textContent = 'Sending...';
-        }
-
-        // Try EmailJS first, fallback to Netlify Forms
-        const emailSent = await sendEmailViaEmailJS(finalResponseField.value, {
-            selectedDate: selectedDate,
-            suggestions: suggestions,
-            noReason: noReason
-        });
-        
-        // Submit to Netlify Forms (always as backup)
-        try {
-            const formData = new FormData(form);
-            const response = await fetch('/', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                body: new URLSearchParams(formData).toString()
-            });
-
-            if (response.ok) {
-                // Check if it was a "Yes" response
-                if (finalResponseField.value === 'YES') {
-                    localStorage.setItem('dateAccepted', 'true');
-                    // Show countdown section
-                    const countdownSection = document.getElementById('countdownSection');
-                    if (countdownSection) {
-                        countdownSection.style.display = 'flex';
-                        initCountdown();
-                        // Scroll to countdown after a delay
-                        setTimeout(() => {
-                            countdownSection.scrollIntoView({ behavior: 'smooth' });
-                        }, 2000);
-                    }
-                    // Show thank you message
-                    showThankYouMessage();
-                } else {
-                    // Show gentle message for No
-                    showReceipt('Thank you for being honest with me. Your answer has been received. 🤍');
-                }
-                
-                form.reset();
-                // Reset button states
-                if (submitButton) {
-                    submitButton.disabled = false;
-                    submitButton.textContent = 'Send Response 🌿';
-                }
-            } else {
-                console.error('Form submission failed');
-                alert('Something went wrong. Please try again.');
-                if (submitButton) {
-                    submitButton.disabled = false;
-                    submitButton.textContent = 'Send Response 🌿';
-                }
-            }
-        } catch (error) {
-            console.error('Error submitting form:', error);
-            alert('Something went wrong. Please try again.');
-            if (submitButton) {
-                submitButton.disabled = false;
-                submitButton.textContent = 'Send Response 🌿';
-            }
+            submitButton.disabled = false;
+            submitButton.textContent = 'Send Response 🌿';
         }
     });
 }
@@ -835,24 +825,38 @@ function initCustomCursor() {
 // ============================================
 
 /**
- * Initialize EmailJS
+ * Initialize EmailJS with public key
  */
 function initEmailJS() {
     // Wait for EmailJS SDK to load
     if (typeof emailjs !== 'undefined') {
-        emailjs.init(EMAILJS_PUBLIC_KEY);
-        console.log('EmailJS initialized successfully');
+        try {
+            emailjs.init(EMAILJS_PUBLIC_KEY);
+            console.log('EmailJS initialized successfully with public key');
+            return true;
+        } catch (error) {
+            console.error('Error initializing EmailJS:', error);
+            return false;
+        }
     } else {
         // Retry after a short delay if SDK hasn't loaded yet
         setTimeout(() => {
             if (typeof emailjs !== 'undefined') {
-                emailjs.init(EMAILJS_PUBLIC_KEY);
-                console.log('EmailJS initialized successfully (delayed)');
+                try {
+                    emailjs.init(EMAILJS_PUBLIC_KEY);
+                    console.log('EmailJS initialized successfully (delayed)');
+                    return true;
+                } catch (error) {
+                    console.error('Error initializing EmailJS (delayed):', error);
+                    return false;
+                }
             } else {
-                console.warn('EmailJS SDK not loaded');
+                console.warn('EmailJS SDK not loaded - check if script is included in HTML');
+                return false;
             }
-        }, 500);
+        }, 1000);
     }
+    return false;
 }
 
 /**
@@ -861,22 +865,32 @@ function initEmailJS() {
 async function sendEmailViaEmailJS(responseType, formData) {
     // Check if EmailJS is available
     if (typeof emailjs === 'undefined') {
-        console.warn('EmailJS SDK not loaded, using Netlify Forms instead');
-        return false;
+        console.warn('EmailJS SDK not loaded - ensure script is included in HTML');
+        return { success: false, error: 'EmailJS SDK not loaded' };
+    }
+    
+    // Ensure EmailJS is initialized with public key
+    try {
+        if (emailjs.init) {
+            emailjs.init(EMAILJS_PUBLIC_KEY);
+        }
+    } catch (e) {
+        // May already be initialized, continue
+        console.log('EmailJS initialization check:', e.message || 'Already initialized');
     }
     
     try {
         // Prepare template parameters
-        // Note: Update these field names to match your EmailJS template variables
+        // Match these to your EmailJS template variables
         const templateParams = {
             response_type: responseType === 'YES' ? 'Yes 🌿' : 'No 🤍',
-            selected_date: formData.selectedDate || 'Not specified',
+            selected_date: formData.selectedDate || SUGGESTED_DATE,
             suggestions: formData.suggestions || 'None provided',
             no_reason: formData.noReason || 'N/A',
             timestamp: new Date().toLocaleString(),
             page_name: 'DateWithYou',
             message: responseType === 'YES' 
-                ? `She said YES! Selected date: ${formData.selectedDate || 'Not specified'}`
+                ? `She said YES! Selected date: ${formData.selectedDate || SUGGESTED_DATE}`
                 : `She said NO. Reason: ${formData.noReason || 'Not provided'}`
         };
         
@@ -889,11 +903,53 @@ async function sendEmailViaEmailJS(responseType, formData) {
         );
         
         console.log('Email sent successfully via EmailJS:', result);
-        return true;
+        return { success: true, result: result };
     } catch (error) {
         console.error('EmailJS error:', error);
-        // Don't throw - let Netlify Forms handle it as fallback
-        return false;
+        return { success: false, error: error.message || 'Unknown error' };
+    }
+}
+
+/**
+ * Show success/failure message on the page
+ */
+function showEmailStatusMessage(success, message) {
+    // Remove any existing status message
+    const existingMessage = document.getElementById('emailStatusMessage');
+    if (existingMessage) {
+        existingMessage.remove();
+    }
+    
+    // Create status message element
+    const statusMessage = document.createElement('div');
+    statusMessage.id = 'emailStatusMessage';
+    statusMessage.className = `email-status-message ${success ? 'success' : 'error'}`;
+    statusMessage.textContent = message;
+    statusMessage.setAttribute('role', 'alert');
+    statusMessage.setAttribute('aria-live', 'polite');
+    
+    // Insert after the response buttons
+    const finalResponseContainer = document.querySelector('.final-response-container');
+    if (finalResponseContainer) {
+        finalResponseContainer.insertAdjacentElement('afterend', statusMessage);
+        
+        // Scroll to message
+        setTimeout(() => {
+            statusMessage.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }, 100);
+        
+        // Auto-remove success messages after 5 seconds
+        if (success) {
+            setTimeout(() => {
+                statusMessage.style.opacity = '0';
+                statusMessage.style.transform = 'translateY(-10px)';
+                setTimeout(() => {
+                    if (statusMessage.parentNode) {
+                        statusMessage.remove();
+                    }
+                }, 300);
+            }, 5000);
+        }
     }
 }
 
@@ -1041,11 +1097,25 @@ document.addEventListener('DOMContentLoaded', () => {
             console.error('Error initializing countdown:', error);
         }
         
-        // Initialize EmailJS
+        // Initialize EmailJS - wait for SDK to load
+        const initEmailJSWithRetry = () => {
+            if (typeof emailjs !== 'undefined') {
+                try {
+                    emailjs.init(EMAILJS_PUBLIC_KEY);
+                    console.log('EmailJS initialized successfully');
+                } catch (error) {
+                    console.error('Error initializing EmailJS:', error);
+                }
+            } else {
+                // Retry after delay
+                setTimeout(initEmailJSWithRetry, 500);
+            }
+        };
+        
         try {
-            initEmailJS();
+            initEmailJSWithRetry();
         } catch (error) {
-            console.error('Error initializing EmailJS:', error);
+            console.error('Error setting up EmailJS initialization:', error);
         }
         
         // Initialize custom cursor (with delay to ensure DOM is ready)
