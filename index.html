@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DateWithYou - A Special Invitation</title>
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E🌿%3C/text%3E%3C/svg%3E">
+    <link rel="stylesheet" href="styles.css">
+    <!-- EmailJS SDK -->
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+    <script>
+        // Set theme immediately to prevent flash
+        (function() {
+            const theme = localStorage.getItem('theme') || 'light';
+            document.documentElement.setAttribute('data-theme', theme);
+        })();
+    </script>
+</head>
+<body>
+    <!-- Custom Cursor -->
+    <div class="custom-cursor" id="customCursor" aria-hidden="true"></div>
+    <!-- Enhanced Nature Background -->
+    <div class="nature-background" aria-hidden="true">
+        <!-- Floating particles (leaves, fireflies) -->
+        <div class="particles">
+            <div class="particle particle-leaf"></div>
+            <div class="particle particle-leaf"></div>
+            <div class="particle particle-firefly"></div>
+            <div class="particle particle-leaf"></div>
+            <div class="particle particle-firefly"></div>
+            <div class="particle particle-leaf"></div>
+            <div class="particle particle-firefly"></div>
+            <div class="particle particle-leaf"></div>
+            <div class="particle particle-firefly"></div>
+            <div class="particle particle-leaf"></div>
+        </div>
+        
+        <!-- Gentle sunlight rays -->
+        <div class="sunlight-rays">
+            <div class="ray ray-1"></div>
+            <div class="ray ray-2"></div>
+            <div class="ray ray-3"></div>
+        </div>
+        
+        <!-- Drifting mist -->
+        <div class="mist-layer">
+            <div class="mist mist-1"></div>
+            <div class="mist mist-2"></div>
+            <div class="mist mist-3"></div>
+        </div>
+        
+        <!-- Forest silhouettes -->
+        <div class="forest-silhouettes">
+            <div class="tree tree-1"></div>
+            <div class="tree tree-2"></div>
+            <div class="tree tree-3"></div>
+        </div>
+    </div>
+
+    <!-- Progress Indicator -->
+    <div class="progress-indicator" id="progressIndicator" aria-hidden="true">
+        <div class="progress-bar" id="progressBar"></div>
+    </div>
+
+    <!-- Theme Toggle -->
+    <button class="theme-toggle" id="themeToggle" aria-label="Toggle dark mode">
+        <span class="theme-icon">🌙</span>
+    </button>
+
+    <!-- Hero Section -->
+    <section class="hero" id="hero">
+        <div class="hero-gradient" aria-hidden="true"></div>
+        <div class="floating-leaves" aria-hidden="true">
+            <div class="leaf leaf-1">🍃</div>
+            <div class="leaf leaf-2">🍃</div>
+            <div class="leaf leaf-3">🍃</div>
+            <div class="leaf leaf-4">🍃</div>
+            <div class="leaf leaf-5">🍃</div>
+        </div>
+        <div class="hero-content">
+            <h1 class="hero-title" id="heroTitle">
+                <span class="word">Hey</span>
+                <span class="word">Sandra…</span>
+            </h1>
+            <p class="hero-subtitle" id="heroSubtitle">
+                <span class="word">I</span>
+                <span class="word">have</span>
+                <span class="word">a</span>
+                <span class="word">question</span>
+                <span class="word">for</span>
+                <span class="word">you.</span>
+            </p>
+        </div>
+        <div class="scroll-indicator">
+            <div class="scroll-arrow"></div>
+        </div>
+    </section>
+
+    <!-- Question Section -->
+    <section class="question-section" id="question" aria-label="Date question">
+        <div class="question-container">
+            <p class="question-text" id="questionText">
+                <span class="word">Will</span>
+                <span class="word">you</span>
+                <span class="word">go</span>
+                <span class="word">on</span>
+                <span class="word">a</span>
+                <span class="word">date</span>
+                <span class="word">with</span>
+                <span class="word">me</span>
+                <span class="word">to…</span>
+            </p>
+        </div>
+    </section>
+
+    <!-- Location Reveal Section -->
+    <section class="location-section" id="location" aria-label="Location reveal">
+        <div class="location-container">
+            <h2 class="location-text" id="locationText">
+                <span class="location-word">Nairobi</span>
+                <span class="location-word">Safari</span>
+                <span class="location-word">Walk</span>
+            </h2>
+        </div>
+    </section>
+
+    <!-- Appreciation Section -->
+    <section class="appreciation-section" id="appreciation" aria-label="Appreciation messages">
+        <div class="appreciation-content">
+            <div class="appreciation-card fade-in-scroll">
+                <p class="appreciation-text">
+                    This isn't about impressing you. It's about spending time with you, at your pace.
+                </p>
+            </div>
+            <div class="appreciation-card fade-in-scroll">
+                <p class="appreciation-text">
+                    I appreciate your gentleness, and I want you to feel chosen, safe, and valued.
+                </p>
+            </div>
+            <div class="appreciation-card fade-in-scroll">
+                <p class="appreciation-text">
+                    There's no pressure here. Just a simple question, and whatever answer feels right to you.
+                </p>
+            </div>
+            <div class="appreciation-card fade-in-scroll">
+                <p class="appreciation-text">
+                    Your presence matters to me, and I'd love to share this experience with you.
+                </p>
+            </div>
+            
+            <!-- Surprise button -->
+            <div class="surprise-container slide-up-scroll">
+                <button class="surprise-button" id="surpriseButton" aria-label="Reveal surprise message">
+                    A little surprise 🌿
+                </button>
+                <div class="surprise-message" id="surpriseMessage">
+                    <p id="surpriseText">You're wonderful, just as you are.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Date Response Section -->
+    <section class="response-section" id="response" aria-label="Date response form">
+        <div class="response-container">
+            <!-- Date Question -->
+            <div class="date-question fade-in-scroll">
+                <p class="date-question-text">Would you like to go on a date with me?</p>
+            </div>
+
+            <div class="date-info slide-up-scroll">
+                <p class="suggested-date">I've suggested: <span class="date-highlight">Wednesday, 17th December 2025</span></p>
+                <p class="date-subtext">But feel free to choose a date that works better for you 🤍</p>
+            </div>
+
+            <!-- Response Form -->
+            <form 
+                name="date-invitation" 
+                method="POST" 
+                data-netlify="true" 
+                netlify-honeypot="bot-field"
+                class="response-form slide-up-scroll" 
+                id="responseForm"
+            >
+                <!-- Netlify honeypot field -->
+                <input type="hidden" name="form-name" value="date-invitation">
+                <p style="display: none;">
+                    <label>Don't fill this out if you're human: <input name="bot-field" /></label>
+                </p>
+
+                <!-- Hidden fields -->
+                <input type="hidden" name="response_type" id="responseType" value="">
+                <input type="hidden" name="suggested_date" value="Wednesday, 17th December 2025">
+                <input type="hidden" name="page_name" value="DateWithYou">
+
+                <!-- Date picker - always visible -->
+                <div class="date-picker-container fade-in-scroll">
+                    <label for="selected-date" class="date-picker-label">
+                        Choose your preferred date 🤍
+                    </label>
+                    <input 
+                        type="date" 
+                        id="selected-date" 
+                        name="selected_date"
+                        class="date-picker"
+                        min="2025-01-01"
+                        value="2025-12-17"
+                    >
+                </div>
+
+                <!-- Suggestions Section -->
+                <div class="suggestions-container slide-up-scroll">
+                    <label for="suggestions" class="suggestions-label">
+                        Any suggestions or thoughts you'd like to share? (Optional) 🌿
+                    </label>
+                    <textarea 
+                        id="suggestions" 
+                        name="suggestions"
+                        class="suggestions-textarea"
+                        rows="4"
+                        placeholder="Share anything you'd like... ideas, preferences, or just a note 🤍"
+                        aria-label="Optional suggestions or thoughts"
+                    ></textarea>
+                </div>
+
+                <!-- Final Response buttons -->
+                <div class="final-response-container scale-scroll">
+                    <p class="final-question-text">What's your final answer?</p>
+                    <div class="final-response-buttons">
+                        <button 
+                            type="button" 
+                            class="response-btn response-btn-yes" 
+                            id="finalYesButton"
+                            aria-label="Accept the invitation"
+                        >
+                            Yes 🌿
+                        </button>
+                        <button 
+                            type="button" 
+                            class="response-btn response-btn-no" 
+                            id="finalNoButton"
+                            aria-label="Decline the invitation"
+                        >
+                            No 🤍
+                        </button>
+                    </div>
+                </div>
+
+                <!-- No reason field (hidden until No is clicked) -->
+                <div class="no-reason-container" id="noReasonContainer" style="display: none;">
+                    <label for="no-reason" class="no-reason-label">
+                        I'd love to understand why, if you're comfortable sharing 🤍
+                    </label>
+                    <textarea 
+                        id="no-reason" 
+                        name="no_reason"
+                        class="no-reason-textarea"
+                        rows="3"
+                        placeholder="Your thoughts are welcome, but not required..."
+                        aria-label="Optional reason for declining"
+                    ></textarea>
+                </div>
+
+                <!-- Submit button (hidden until Yes or No is selected) -->
+                <div class="submit-button-container" id="submitButtonContainer" style="display: none;">
+                    <button 
+                        type="submit" 
+                        class="response-btn response-btn-submit" 
+                        id="submitButton"
+                        aria-label="Submit response"
+                    >
+                        Send Response 🌿
+                    </button>
+                </div>
+            </form>
+        </div>
+    </section>
+
+    <!-- Countdown Timer (Only shows if accepted) -->
+    <section class="countdown-section" id="countdownSection" style="display: none;">
+        <div class="countdown-content fade-in-scroll">
+            <h2 class="section-title">Looking Forward to Seeing You</h2>
+            <div class="countdown-container">
+                <div class="countdown-item">
+                    <span class="countdown-number" id="countdownDays">0</span>
+                    <span class="countdown-label">Days</span>
+                </div>
+                <div class="countdown-item">
+                    <span class="countdown-number" id="countdownHours">0</span>
+                    <span class="countdown-label">Hours</span>
+                </div>
+                <div class="countdown-item">
+                    <span class="countdown-number" id="countdownMinutes">0</span>
+                    <span class="countdown-label">Minutes</span>
+                </div>
+            </div>
+            <p class="countdown-message">Until we meet at Nairobi Safari Walk 🤍</p>
+        </div>
+    </section>
+
+    <!-- Receipt Confirmation -->
+    <div class="receipt-overlay" id="receiptOverlay">
+        <div class="receipt-card" id="receiptCard">
+            <div class="receipt-header">
+                <div class="checkmark-container">
+                    <svg class="checkmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">
+                        <circle class="checkmark-circle" cx="26" cy="26" r="25" fill="none"/>
+                        <path class="checkmark-check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8"/>
+                    </svg>
+                </div>
+                <h3 class="receipt-title">Thank you</h3>
+            </div>
+            <div class="receipt-body">
+                <p class="receipt-message">Thank you for trusting me with your answer.</p>
+                <p class="receipt-message">This stays between us.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Parallax Background Layers -->
+    <div class="parallax-layer layer-1" aria-hidden="true"></div>
+    <div class="parallax-layer layer-2" aria-hidden="true"></div>
+    <div class="parallax-layer layer-3" aria-hidden="true"></div>
+
+    <script src="script.js"></script>
+</body>
+</html>
+
