@@ -7,6 +7,8 @@
 const EMAILJS_SERVICE_ID = 'service_wy0iqr9';
 const EMAILJS_TEMPLATE_ID = 'template_3m5nhx9';
 const EMAILJS_PUBLIC_KEY = '9LLwjBULRKf4teFCy';
+// ⚠️ IMPORTANT: Replace this with YOUR email address where you want to receive responses
+const RECIPIENT_EMAIL = 'your-email@example.com'; // TODO: Replace with your actual email
 
 // ============================================
 // CONSTANTS
@@ -972,6 +974,10 @@ async function sendEmailViaEmailJS(responseType, formData) {
         // Prepare template parameters
         // Match these to your EmailJS template variables
         const templateParams = {
+            // Recipient email (required by EmailJS)
+            to_email: RECIPIENT_EMAIL,
+            reply_to: RECIPIENT_EMAIL,
+            // Form data
             response_type: responseType === 'YES' ? 'Yes 🌿' : 'No 🤍',
             selected_date: formData.selectedDate || SUGGESTED_DATE,
             suggestions: formData.suggestions || 'None provided',
@@ -982,6 +988,15 @@ async function sendEmailViaEmailJS(responseType, formData) {
                 ? `She said YES! Selected date: ${formData.selectedDate || SUGGESTED_DATE}`
                 : `She said NO. Reason: ${formData.noReason || 'Not provided'}`
         };
+        
+        // Validate recipient email
+        if (!RECIPIENT_EMAIL || RECIPIENT_EMAIL === 'your-email@example.com') {
+            console.error('❌ RECIPIENT_EMAIL not configured! Please set your email address in script.js');
+            return { 
+                success: false, 
+                error: 'Email recipient not configured. Please contact the website owner.' 
+            };
+        }
         
         console.log('📤 Sending email via EmailJS with params:', templateParams);
         
